@@ -1,10 +1,9 @@
 package PhoneBookProjectKotlin.Commands
 
 import PhoneBookProjectKotlin.ConsoleUI
-import PhoneBookProjectKotlin.work
+import java.io.IOException
 
 sealed class Command(val description: String, var consoleUI: ConsoleUI) {
-    //var consoleUI: ConsoleUI? = null
     abstract fun execute()
     abstract fun isValid() : Boolean
 }
@@ -42,5 +41,4 @@ class Show(consoleUI: ConsoleUI) : Command("Последний добавлен�
     override fun isValid(): Boolean {
         TODO("Not yet implemented")
     }
-
 }

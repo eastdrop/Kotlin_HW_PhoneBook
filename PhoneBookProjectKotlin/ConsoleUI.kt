@@ -4,19 +4,15 @@ import PhoneBookProjectKotlin.Commands.Command
 import kotlin.reflect.KClass
 
 var work: Boolean = true
-val commandList = listOf("exit", "help", "add")
-
-fun getCommands(): String {
-    val stringBuilder = StringBuilder()
-    for (element in commandList){
-        stringBuilder.append(element)
-        stringBuilder.append("\n")
+val subClasses: List<KClass<out Command>> = Command::class.sealedSubclasses
+fun getCommands() {
+    println("List of commands:")
+    for (element in subClasses){
+        println(element)
     }
-    return stringBuilder.toString()
 }
 
 fun readCommand() : KClass<out Command>? {
-        val subClasses: List<KClass<out Command>> = Command::class.sealedSubclasses
         val command: String = readlnOrNull().toString().lowercase().replaceFirstChar { it.uppercase() }
         for (element in subClasses){
             var strElement: String = element.simpleName ?: ""
@@ -29,7 +25,6 @@ fun readCommand() : KClass<out Command>? {
 
 fun start(){
     while (work){
-        println("Choose action: ")
         println(getCommands())
         println("Input command: ")
         val commandClass = readCommand()
@@ -39,19 +34,9 @@ fun start(){
         } else println("Unknown command. Please try again.")
     }
 }
-/*
-fun readCommand(command: String) {
-    if (command == "exit"){
-        return Exit.exit()
-    } else if (command == "help"){
-        return Help.help()
-    } else if (command == "add")
-        return Add.add()
-}
-*/
 
-open class ConsoleUI {
-    var contacts = mutableListOf<Person>()
+class ConsoleUI {
+    private var contacts = mutableListOf<Person>()
     fun add() {
         println("Add contact \nEnter Name: ")
         val name = readlnOrNull().toString().ifBlank { "NoName" }
@@ -79,13 +64,17 @@ open class ConsoleUI {
         work = false
     }
     fun help() {
-        println("Exit - closing app")
+        for (element in subClasses){
+            var e = element.constructors.first().call()
+            e.description
+        }
+        /*println("Exit - closing app")
         println("Help - info about commands")
         println("Add - add contact to your phonebook")
-        readln()
+        readln()*/
     }
     fun show(){
-        if (contacts.isNullOrEmpty()) println("Not initialized")
+        if (contacts.isEmpty()) println("Not initialized")
         else println(contacts.last())
     }
 }
