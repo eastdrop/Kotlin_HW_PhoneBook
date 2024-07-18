@@ -5,8 +5,8 @@ import PhoneBookProjectKotlin.work
 
 sealed class Command(val description: String, var consoleUI: ConsoleUI) {
     //var consoleUI: ConsoleUI? = null
-    abstract fun isValid() : Boolean
     abstract fun execute()
+    abstract fun isValid() : Boolean
 }
 class Exit(consoleUI: ConsoleUI): Command("Closing app", consoleUI) {
     override fun execute() {
@@ -30,8 +30,17 @@ class Add(consoleUI: ConsoleUI) : Command("Добавить контакт", con
     override fun execute() {
         super.consoleUI.add()
     }
+
     override fun isValid(): Boolean {
         TODO("Not yet implemented")
     }
 }
+class Show(consoleUI: ConsoleUI) : Command("Последний добавленный контакт: ", consoleUI){
+    override fun execute() {
+        super.consoleUI.show()
+    }
+    override fun isValid(): Boolean {
+        TODO("Not yet implemented")
+    }
 
+}

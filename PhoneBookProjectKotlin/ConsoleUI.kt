@@ -51,8 +51,8 @@ fun readCommand(command: String) {
 */
 
 open class ConsoleUI {
+    var contacts = mutableListOf<Person>()
     fun add() {
-        var contacts = mutableListOf<Person>()
         println("Add contact \nEnter Name: ")
         val name = readlnOrNull().toString().ifBlank { "NoName" }
         var phone: String
@@ -83,6 +83,10 @@ open class ConsoleUI {
         println("Help - info about commands")
         println("Add - add contact to your phonebook")
         readln()
+    }
+    fun show(){
+        if (contacts.isNullOrEmpty()) println("Not initialized")
+        else println(contacts.last())
     }
 }
 
