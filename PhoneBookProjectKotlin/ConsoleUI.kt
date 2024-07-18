@@ -1,9 +1,6 @@
 package PhoneBookProjectKotlin
 
-import PhoneBookProjectKotlin.Commands.Add
 import PhoneBookProjectKotlin.Commands.Command
-import PhoneBookProjectKotlin.Commands.Exit
-import PhoneBookProjectKotlin.Commands.Help
 import kotlin.reflect.KClass
 
 var work: Boolean = true
@@ -22,22 +19,11 @@ fun readCommand() : KClass<out Command>? {
         val subClasses: List<KClass<out Command>> = Command::class.sealedSubclasses
         val command: String = readlnOrNull().toString().lowercase().replaceFirstChar { it.uppercase() }
         for (element in subClasses){
-            var strElement: String = element.toString()
-            if (strElement.contains(command)) {
-                /*for (f in element.functions){
-                    if (f.returnType.equals(Unit)){
-                        return f
-                    }
-                }*/
+            var strElement: String = element.simpleName ?: ""
+            if (strElement.equals(command, ignoreCase = true)) {
                 return element
             }
         }
-       /*if (command == "exit"){
-            return Exit
-        } else if (command == "help"){
-            return Help
-        } else if (command == "add")
-            return Add*/
     return null
 }
 
@@ -46,7 +32,11 @@ fun start(){
         println("Choose action: ")
         println(getCommands())
         println("Input command: ")
-        readCommand()
+        val commandClass = readCommand()
+        if (commandClass != null){
+            val command = commandClass.objectInstance ?: commandClass.constructors.first().call()
+            command.execute()
+        } else println("Unknown command. Please try again.")
     }
 }
 /*
@@ -60,38 +50,39 @@ fun readCommand(command: String) {
 }
 */
 
-class ConsoleUI {
+open class ConsoleUI {
     fun add() {
         var contacts = mutableListOf<Person>()
-        lateinit var name: String
-        lateinit var phone: String
-        lateinit var email: String
-        fun checkPhone(phoneToCheck: String): Boolean{
-            return !phoneToCheck.startsWith("+").and(phoneToCheck.removePrefix("+").all { c: Char -> c.isDigit() })
-        }
-        fun checkMail(mailToCheck: String): Boolean{
-            return !mailToCheck.any { "@" in mailToCheck && "." in mailToCheck}
-        }
-        println("Добавить контакт \n Введите Имя: ")
-        name = readLine().toString()
-        if (name == null) {
-            name = "NoName"
-        }
-        println("Добавить контакт \n Введите телефон: ")
-        phone = readLine().toString()
+        println("Add contact \nEnter Name: ")
+        val name = readlnOrNull().toString().ifBlank { "NoName" }
+        var phone: String
+        var email: String
         do {
-            println("Телефон должен начинаться с \"+\"")
-            phone = readLine().toString()
-        } while (checkPhone(phone))
-        println("Добавить контакт \n Введите почту: ")
-        email = readLine().toString()
+            println("Добавить контакт \n Введите телефон: (Телефон должен начинаться с '+'): ")
+            phone = readlnOrNull().toString()
+        } while (!checkPhone(phone))
         do {
-            println("Почта должна содержать  \"@\" и \".\"")
-            email = readLine().toString()
-        } while (checkMail(email))
+            println("Добавить контакт \n Введите почту (Почта должна содержать  '@' и '.'): ")
+            email = readlnOrNull().toString()
+        } while (!checkMail(email))
         val person = Person(name, phone, email)
         contacts.add(person)
         println(contacts)
-
+    }
+    private fun checkPhone(phoneToCheck: String): Boolean{
+        return phoneToCheck.startsWith("+").and(phoneToCheck.removePrefix("+").all { c: Char -> c.isDigit() })
+    }
+    private fun checkMail(mailToCheck: String): Boolean{
+        return mailToCheck.any { "@" in mailToCheck && "." in mailToCheck}
+    }
+    fun exit(){
+        work = false
+    }
+    fun help() {
+        println("Exit - closing app")
+        println("Help - info about commands")
+        println("Add - add contact to your phonebook")
+        readln()
     }
 }
+
