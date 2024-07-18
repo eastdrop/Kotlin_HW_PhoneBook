@@ -8,7 +8,7 @@ val subClasses: List<KClass<out Command>> = Command::class.sealedSubclasses
 fun getCommands() {
     println("List of commands:")
     for (element in subClasses){
-        println(element)
+        println(element.simpleName)
     }
 }
 
@@ -30,6 +30,7 @@ fun start(){
         val commandClass = readCommand()
         if (commandClass != null){
             val command = commandClass.objectInstance ?: commandClass.constructors.first().call()
+            command.description
             command.execute()
         } else println("Unknown command. Please try again.")
     }
