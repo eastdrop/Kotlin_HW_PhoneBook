@@ -13,9 +13,7 @@ class Exit(private val consoleUI: ConsoleUI): Command{
         println("Closing the application")
         consoleUI.exit()
     }
-    override fun isValid(): Boolean {
-        return true
-    }
+    override fun isValid(): Boolean = true
 }
 
 class Help(private val consoleUI: ConsoleUI): Command{
@@ -23,9 +21,7 @@ class Help(private val consoleUI: ConsoleUI): Command{
     override fun execute() {
         consoleUI.help()
     }
-    override fun isValid(): Boolean {
-        return true
-    }
+    override fun isValid(): Boolean = true
 }
 class Add(private val consoleUI: ConsoleUI) : Command {
     override val description = "Add a new contact"
@@ -34,14 +30,9 @@ class Add(private val consoleUI: ConsoleUI) : Command {
     }
     override fun isValid(): Boolean {
 
-        fun checkPhone(phoneToCheck: String): Boolean{
-            return phoneToCheck.startsWith("+")&& phoneToCheck.removePrefix("+").all { it.isDigit() }
-        }
-        fun checkMail(mailToCheck: String): Boolean{
-            return mailToCheck.contains("@") && mailToCheck.contains(".")
-        }
-        if (checkPhone(consoleUI.phone) && checkMail(consoleUI.email) == true) return true
-        else return false
+        val checkPhone: (String) -> Boolean = {it.startsWith("+") && it.removePrefix("+").all(Char::isDigit)}
+        val checkMail: (String) -> Boolean = { it.contains("@") && it.contains(".") }
+        return checkPhone(consoleUI.phone) && checkMail(consoleUI.email)
     }
 }
 class Show(private val consoleUI: ConsoleUI) : Command{
@@ -49,7 +40,5 @@ class Show(private val consoleUI: ConsoleUI) : Command{
     override fun execute() {
         consoleUI.show()
     }
-    override fun isValid(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun isValid(): Boolean = true
 }
