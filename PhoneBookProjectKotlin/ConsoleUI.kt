@@ -1,10 +1,18 @@
 package PhoneBookProjectKotlin
 
-import PhoneBookProjectKotlin.Commands.Command
+import PhoneBookProjectKotlin.Commands.*
 import kotlin.reflect.KClass
 
 var work: Boolean = true
-val subClasses: List<KClass<out Command>> = Command::class.sealedSubclasses
+//val subClasses: List<KClass<out Command>> = Command::class.sealedSubclasses
+val subClasses: List<KClass<out Command>> = listOf(
+    Exit::class,
+    Help::class,
+    Add::class,
+    Show::class
+)
+val consoleUI = ConsoleUI()
+
 fun getCommands() {
     println("List of commands:")
     for (element in subClasses){
@@ -25,11 +33,11 @@ fun readCommand() : KClass<out Command>? {
 
 fun start(){
     while (work){
-        println(getCommands())
+        getCommands()
         println("Input command: ")
         val commandClass = readCommand()
         if (commandClass != null){
-            val command = commandClass.objectInstance ?: commandClass.constructors.first().call()
+            val command = commandClass.constructors.first().call(consoleUI)
             command.description
             command.execute()
         } else println("Unknown command. Please try again.")
@@ -37,42 +45,32 @@ fun start(){
 }
 
 class ConsoleUI {
+    val checkAdd = Add(consoleUI)
     private var contacts = mutableListOf<Person>()
+    lateinit var phone: String
+    lateinit var email: String
     fun add() {
         println("Add contact \nEnter Name: ")
         val name = readlnOrNull().toString().ifBlank { "NoName" }
-        var phone: String
-        var email: String
+
         do {
-            println("Добавить контакт \n Введите телефон: (Телефон должен начинаться с '+'): ")
+            println("Введите телефон: (Телефон должен начинаться с '+'): ")
             phone = readlnOrNull().toString()
-        } while (!checkPhone(phone))
-        do {
-            println("Добавить контакт \n Введите почту (Почта должна содержать  '@' и '.'): ")
+            println("Введите почту (Почта должна содержать  '@' и '.'): ")
             email = readlnOrNull().toString()
-        } while (!checkMail(email))
+        } while (!checkAdd.isValid())
         val person = Person(name, phone, email)
         contacts.add(person)
-        println(contacts)
     }
-    private fun checkPhone(phoneToCheck: String): Boolean{
-        return phoneToCheck.startsWith("+").and(phoneToCheck.removePrefix("+").all { c: Char -> c.isDigit() })
-    }
-    private fun checkMail(mailToCheck: String): Boolean{
-        return mailToCheck.any { "@" in mailToCheck && "." in mailToCheck}
-    }
+
     fun exit(){
         work = false
     }
     fun help() {
         for (element in subClasses){
-            var e = element.constructors.first().call()
-            e.description
+            val e = element.constructors.first().call(consoleUI)
+            println("${element.simpleName}: ${e.description}")
         }
-        /*println("Exit - closing app")
-        println("Help - info about commands")
-        println("Add - add contact to your phonebook")
-        readln()*/
     }
     fun show(){
         if (contacts.isEmpty()) println("Not initialized")
