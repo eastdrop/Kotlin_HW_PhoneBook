@@ -1,44 +1,66 @@
 package PhoneBookProjectKotlin.Commands
 
 import PhoneBookProjectKotlin.ConsoleUI
-import java.io.IOException
 
-sealed class Command(val description: String, var consoleUI: ConsoleUI) {
+interface Command {
+    val description: String
     abstract fun execute()
-    abstract fun isValid() : Boolean
+    fun isValid() : Boolean = true
 }
-class Exit(consoleUI: ConsoleUI): Command("Closing app", consoleUI) {
+class Exit(private val consoleUI: ConsoleUI): Command{
+    override val description = "Exit the app"
     override fun execute() {
-        super.consoleUI.exit()
+        consoleUI.exit()
     }
-    override fun isValid(): Boolean {
-        TODO("Not yet implemented")
+    override fun isValid(): Boolean = true
+}
+
+class Help(private val consoleUI: ConsoleUI): Command{
+    override val description = "Show available commands"
+    override fun execute() {
+        consoleUI.help()
+    }
+    override fun isValid(): Boolean = true
+}
+class Add(private val consoleUI: ConsoleUI) : Command {
+    override val description = "Add a new contact"
+    override fun execute() {
+        consoleUI.add()
+    }
+    fun isValid(consoleUI: ConsoleUI, checkType: String): Boolean {
+        val checkPhone: (String) -> Boolean = {it.startsWith("+") && it.removePrefix("+").all(Char::isDigit)}
+        val checkMail: (String) -> Boolean = { it.contains("@") && it.contains(".") }
+        return when (checkType){
+            "phone" -> checkPhone(consoleUI.phone)
+            "email" -> checkMail(consoleUI.email)
+            else -> false
+        }
+    }
+}
+class Show(private val consoleUI: ConsoleUI) : Command{
+    override val description = "Show contact by name"
+    override fun execute() {
+        consoleUI.show()
+    }
+    override fun isValid(): Boolean = true
+}
+
+class AddPhone(private val consoleUI: ConsoleUI): Command{
+    override val description = "Add a new phone to contact"
+    override fun execute() {
+        consoleUI.addPhone()
     }
 }
 
-class Help(consoleUI: ConsoleUI): Command("HELP!!!", consoleUI) {
+class AddEmail(private val consoleUI: ConsoleUI): Command{
+    override val description = "Add a new email to contact"
     override fun execute() {
-        super.consoleUI.help()
-    }
-    override fun isValid(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-}
-class Add(consoleUI: ConsoleUI) : Command("Добавить контакт", consoleUI) {
-    override fun execute() {
-        super.consoleUI.add()
-    }
-
-    override fun isValid(): Boolean {
-        TODO("Not yet implemented")
+        consoleUI.addEmail()
     }
 }
-class Show(consoleUI: ConsoleUI) : Command("Последний добавленный контакт: ", consoleUI){
+class Find(private val consoleUI: ConsoleUI): Command{
+    override val description = "Search a contact by phone or email"
     override fun execute() {
-        super.consoleUI.show()
-    }
-    override fun isValid(): Boolean {
-        TODO("Not yet implemented")
+        consoleUI.find()
     }
 }
