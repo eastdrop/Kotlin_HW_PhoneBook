@@ -10,7 +10,6 @@ interface Command {
 class Exit(private val consoleUI: ConsoleUI): Command{
     override val description = "Exit the app"
     override fun execute() {
-        println("Closing the application")
         consoleUI.exit()
     }
     override fun isValid(): Boolean = true
@@ -57,5 +56,11 @@ class AddEmail(private val consoleUI: ConsoleUI): Command{
     override val description = "Add a new email to contact"
     override fun execute() {
         consoleUI.addEmail()
+    }
+}
+class Find(private val consoleUI: ConsoleUI): Command{
+    override val description = "Search a contact by phone or email"
+    override fun execute() {
+        consoleUI.find()
     }
 }
