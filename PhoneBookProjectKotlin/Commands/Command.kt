@@ -5,7 +5,7 @@ import PhoneBookProjectKotlin.ConsoleUI
 interface Command {
     val description: String
     abstract fun execute()
-    abstract fun isValid() : Boolean
+    fun isValid() : Boolean = true
 }
 class Exit(private val consoleUI: ConsoleUI): Command{
     override val description = "Exit the app"
@@ -28,17 +28,34 @@ class Add(private val consoleUI: ConsoleUI) : Command {
     override fun execute() {
         consoleUI.add()
     }
-    override fun isValid(): Boolean {
-
+    fun isValid(consoleUI: ConsoleUI, checkType: String): Boolean {
         val checkPhone: (String) -> Boolean = {it.startsWith("+") && it.removePrefix("+").all(Char::isDigit)}
         val checkMail: (String) -> Boolean = { it.contains("@") && it.contains(".") }
-        return checkPhone(consoleUI.phone) && checkMail(consoleUI.email)
+        return when (checkType){
+            "phone" -> checkPhone(consoleUI.phone)
+            "email" -> checkMail(consoleUI.email)
+            else -> false
+        }
     }
 }
 class Show(private val consoleUI: ConsoleUI) : Command{
-    override val description = "Show last added contact"
+    override val description = "Show contact by name"
     override fun execute() {
         consoleUI.show()
     }
     override fun isValid(): Boolean = true
+}
+
+class AddPhone(private val consoleUI: ConsoleUI): Command{
+    override val description = "Add a new phone to contact"
+    override fun execute() {
+        consoleUI.addPhone()
+    }
+}
+
+class AddEmail(private val consoleUI: ConsoleUI): Command{
+    override val description = "Add a new email to contact"
+    override fun execute() {
+        consoleUI.addEmail()
+    }
 }

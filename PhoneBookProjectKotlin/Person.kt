@@ -1,12 +1,10 @@
 package PhoneBookProjectKotlin
 
-data class Person (val firstName: String, val phone: String, val email: String) {
+data class Person (val firstName: String, val phones: MutableList<String>, val emails: MutableList<String>) {
     override fun toString(): String {
         return """
             |Contact Details:
-            |Name: $firstName
-            |Phone: $phone
-            |Email: $email
+            |Name: $firstName Phones: $phones Emails: $emails
         """.trimMargin()
     }
 }

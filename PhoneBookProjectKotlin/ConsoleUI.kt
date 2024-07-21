@@ -8,24 +8,62 @@ val subClasses: List<KClass<out Command>> = listOf(
     Exit::class,
     Help::class,
     Add::class,
-    Show::class
+    Show::class,
+    AddPhone::class,
+    AddEmail::class
 )
 val consoleUI = ConsoleUI()
 class ConsoleUI {
-    private var contacts = mutableListOf<Person>()
-    lateinit var phone: String
-    lateinit var email: String
+    var contacts = mutableSetOf<Person>()
+    var phones = mutableListOf<String>()
+    var emails = mutableListOf<String>()
+    var phone : String = ""
+    var email : String = ""
     fun add() {
         println("Add contact \nEnter Name: ")
-        val name = readlnOrNull().orEmpty().ifBlank { "NoName" }
+        var name = readlnOrNull().orEmpty().ifBlank { "NoName" }
         do {
             println("Введите телефон: (Телефон должен начинаться с '+'): ")
             phone = readlnOrNull().orEmpty()
+        } while (!Add(this).isValid(this, "phone"))
+        do {
             println("Введите почту (Почта должна содержать  '@' и '.'): ")
             email = readlnOrNull().orEmpty()
-        } while (!Add(this).isValid())
-        val person = Person(name, phone, email)
+        } while (!Add(this).isValid(this, "email"))
+        phones.addLast(phone)
+        emails.addLast(email)
+        val person = Person(name, phones, emails)
         contacts.add(person)
+    }
+
+    fun addPhone(){
+        println("Введите Имя человека, которому хотите добавить номер: ")
+        val findPerson = readlnOrNull().orEmpty()
+        for (person in contacts){
+            if(person.firstName.contentEquals(findPerson, ignoreCase = true)){
+                do {
+                    println("Введите телефон: (Телефон должен начинаться с '+'): ")
+                    phone = readlnOrNull().orEmpty()
+                } while (!Add(this).isValid(this, "phone"))
+                phones.addLast(phone)
+                println("Phone added successfully")
+            } else println("Contact not found")
+        }
+    }
+
+    fun addEmail(){
+        println("Введите Имя человека, которому хотите добавить почту: ")
+        val findPerson = readlnOrNull().orEmpty()
+        for (person in contacts){
+            if(person.firstName.contentEquals(findPerson, ignoreCase = true)){
+                do {
+                    println("Введите почту (Почта должна содержать  '@' и '.'): ")
+                    email = readlnOrNull().orEmpty()
+                } while (!Add(this).isValid(this, "email"))
+                emails.addLast(email)
+                println("Email added successfully")
+            } else println("Contact not found")
+        }
     }
 
     fun exit(){
@@ -38,8 +76,17 @@ class ConsoleUI {
         }
     }
     fun show(){
-        if (contacts.isEmpty()) println("Not initialized") else println(contacts.last())
+        println("Input name: ")
+        val name = readlnOrNull().orEmpty()
+        if (contacts.isEmpty()) println("Contacts is empty")
+        else if (contacts.isNotEmpty()) {
+            for (person in contacts){
+                if(person.firstName.contentEquals(name, ignoreCase = true)) println(person)
+                else println("Person not found")
+            }
+        }
     }
+    //TODO: make fun find(val mail or phone) and make list of all persons those contain this mail or phone
 }
 
 fun getCommands() {
@@ -63,6 +110,10 @@ fun start(){
             val command = commandClass.constructors.first().call(consoleUI)
             command.description
             command.execute()
+            println("Want to continue?")
+            val choice = readlnOrNull().orEmpty()
+            if (choice == "no") Exit(consoleUI).execute()
+            else continue
         } else println("Unknown command. Please try again.")
     }
 }
