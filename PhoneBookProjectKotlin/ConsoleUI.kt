@@ -108,13 +108,6 @@ class ConsoleUI {
 
 
 }
-//TODO: — Используйте этот DSL для экспорта данных в файл.
-//TODO: — Выходной JSON не обязательно должен быть отформатирован, поля объектов могут идти в любом порядке.
-// Главное, чтобы он имел корректный синтаксис. Такой вывод тоже принимается:
-//[{""emails"": [""ew@huh.ru""],""name"": ""Alex"",""phones"": [""34355"",""847564""]},
-// {""emails"": [],""name"": ""Tom"",""phones"": [""84755""]}]
-//Записать текст в файл можно при помощи удобной функции-расширения writeText:
-//File(""/Users/user/file.txt"").writeText(""Text to write"")
 fun getCommands() {
     println("List of commands:")
     subClasses.forEach{ println((it.simpleName))}
