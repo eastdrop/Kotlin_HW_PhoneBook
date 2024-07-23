@@ -1,6 +1,6 @@
-package PhoneBookProjectKotlin.Commands
+package phoneBookProjectKotlin.commands
 
-import PhoneBookProjectKotlin.ConsoleUI
+import phoneBookProjectKotlin.ConsoleUI
 
 interface Command {
     val description: String

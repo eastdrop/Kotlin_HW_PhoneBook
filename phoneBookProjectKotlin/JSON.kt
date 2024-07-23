@@ -1,4 +1,4 @@
-package PhoneBookProjectKotlin
+package phoneBookProjectKotlin
 
 class JsonObject {
     private val map = mutableMapOf<String, Any?>()

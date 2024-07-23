@@ -1,4 +1,4 @@
-package PhoneBookProjectKotlin
+package phoneBookProjectKotlin
 
 data class Person (val firstName: String, val phones: MutableList<String>, val emails: MutableList<String>) {
     override fun toString(): String {
