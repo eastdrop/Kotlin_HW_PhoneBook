@@ -90,6 +90,7 @@ class ConsoleUI {
             }
         }
     }
+
     fun find(){
         println("Input phone or email of contact")
         val searchData = readlnOrNull().orEmpty()
