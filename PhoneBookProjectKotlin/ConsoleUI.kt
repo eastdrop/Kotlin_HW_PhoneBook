@@ -11,11 +11,12 @@ val subClasses: List<KClass<out Command>> = listOf(
     Show::class,
     AddPhone::class,
     AddEmail::class,
-    Find::class
+    Find::class,
+    Export::class
 )
 val consoleUI = ConsoleUI()
 class ConsoleUI {
-    var contacts = mutableSetOf<Person>()
+    var contacts = mutableListOf<Person>()
     lateinit var phone : String
     lateinit var email : String
     fun add() {
@@ -66,6 +67,7 @@ class ConsoleUI {
             } else println("Contact not found")
         }
     }
+    //TODO: Add fun checkPersonByName(var name) : Person for addPhone and addEmail
 
     fun exit(){
         println("Closing the application")
@@ -96,14 +98,26 @@ class ConsoleUI {
             else println("Person not found")
         }
     }
-    //TODO: make fun find(val mail or phone) and make list of all persons those contain this mail or phone
-}
 
+    fun exportContacts(filePath: String){
+        val json = jsonArray {
+            contacts.forEach { addElement(it.toJson()) }
+        }
+        export(json, filePath)
+    }
+
+
+}
+//TODO: — Используйте этот DSL для экспорта данных в файл.
+//TODO: — Выходной JSON не обязательно должен быть отформатирован, поля объектов могут идти в любом порядке.
+// Главное, чтобы он имел корректный синтаксис. Такой вывод тоже принимается:
+//[{""emails"": [""ew@huh.ru""],""name"": ""Alex"",""phones"": [""34355"",""847564""]},
+// {""emails"": [],""name"": ""Tom"",""phones"": [""84755""]}]
+//Записать текст в файл можно при помощи удобной функции-расширения writeText:
+//File(""/Users/user/file.txt"").writeText(""Text to write"")
 fun getCommands() {
     println("List of commands:")
-    for (element in subClasses){
-        println(element.simpleName)
-    }
+    subClasses.forEach{ println((it.simpleName))}
 }
 
 fun readCommand() : KClass<out Command>? {
@@ -128,6 +142,5 @@ fun start(){
         } else println("Unknown command. Please try again.")
     }
 }
-
 
 
