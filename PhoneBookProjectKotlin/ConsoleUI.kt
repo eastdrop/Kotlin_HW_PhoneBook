@@ -11,11 +11,12 @@ val subClasses: List<KClass<out Command>> = listOf(
     Show::class,
     AddPhone::class,
     AddEmail::class,
-    Find::class
+    Find::class,
+    Export::class
 )
 val consoleUI = ConsoleUI()
 class ConsoleUI {
-    var contacts = mutableSetOf<Person>()
+    var contacts = mutableListOf<Person>()
     lateinit var phone : String
     lateinit var email : String
     fun add() {
@@ -66,6 +67,7 @@ class ConsoleUI {
             } else println("Contact not found")
         }
     }
+    //TODO: Add fun checkPersonByName(var name) : Person for addPhone and addEmail
 
     fun exit(){
         println("Closing the application")
@@ -88,6 +90,7 @@ class ConsoleUI {
             }
         }
     }
+
     fun find(){
         println("Input phone or email of contact")
         val searchData = readlnOrNull().orEmpty()
@@ -96,14 +99,19 @@ class ConsoleUI {
             else println("Person not found")
         }
     }
-    //TODO: make fun find(val mail or phone) and make list of all persons those contain this mail or phone
-}
 
+    fun exportContacts(filePath: String){
+        val json = jsonArray {
+            contacts.forEach { addElement(it.toJson()) }
+        }
+        export(json, filePath)
+    }
+
+
+}
 fun getCommands() {
     println("List of commands:")
-    for (element in subClasses){
-        println(element.simpleName)
-    }
+    subClasses.forEach{ println((it.simpleName))}
 }
 
 fun readCommand() : KClass<out Command>? {
@@ -128,6 +136,5 @@ fun start(){
         } else println("Unknown command. Please try again.")
     }
 }
-
 
 

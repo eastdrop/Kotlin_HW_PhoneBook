@@ -64,3 +64,18 @@ class Find(private val consoleUI: ConsoleUI): Command{
         consoleUI.find()
     }
 }
+
+class Export(private val consoleUI: ConsoleUI): Command{
+    override val description = "Export contacts to a JSON file"
+
+    override fun execute() {
+        println("Enter file path to export contacts: ")
+        val filePath = readlnOrNull().orEmpty()
+        if(filePath.isNotBlank()){
+            consoleUI.exportContacts(filePath)
+            println("Contacts exported to $filePath")
+        } else println("Invalid file path")
+    }
+
+    override fun isValid(): Boolean = true
+}
